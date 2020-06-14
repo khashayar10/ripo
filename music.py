@@ -32,5 +32,4 @@ labvol=Label(root,text="volume")
 labvol.place(x=100,y=500)
 labvol.pack(side=BOTTOM)
 
-
 root.mainloop()
