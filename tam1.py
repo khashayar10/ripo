@@ -42,7 +42,12 @@ currentlabel=Label(root,text="current time")
 currentlabel.pack()
 currentlabel.place(x=190,y=150)
 j=0
+t=0
 index=0
+time_1=0
+time_2=0
+minet=0
+sec=0
 pygame.mixer.init()
 def directorychooser():
     global j
@@ -60,7 +65,7 @@ def directorychooser():
             listbox.insert(j,files)
             
             j+=1
-            print(j) 
+            
     
 
     pygame.mixer.music.load(listofsongs[0])
@@ -74,6 +79,7 @@ def play():
   if pygame.mixer.music.get_busy:
       stopsong()
       time.sleep(2)
+     
   pygame.mixer.music.load(listofsongs[index])
   pygame.mixer.music.play()
   ganre(index)
@@ -83,12 +89,17 @@ def play():
   chvol(0)
   t1=threading.Thread(target=currenttime)
   t1.start()
+  
 def currenttime():
+    global t
     global index
-
+    global time_1
+    global time_2
+    global minet
+    global sec
     tag=TinyTag.get(listofsongs[index])  
-    time_1=tag.duration
-    time_1=int(time_1)
+    time_2=tag.duration
+    time_1=int(time_2)  
     while time_1>0 and pygame.mixer.music.get_busy()  :
         global key
         if key==1:
@@ -98,6 +109,26 @@ def currenttime():
         current.set(f"{minet}:{sec}")
         time.sleep(1)
         time_1-=1  
+
+    
+def currenttime2(): 
+    global t
+    global index
+    global time_1
+    global time_2
+    global minet
+    global sec
+    while time_1>0 and pygame.mixer.music.get_busy()  :
+        global key
+        if key==1:
+            continue
+        minet=int(time_1/60)
+        sec=time_1%60
+        current.set(f"{minet}:{sec}")
+        time.sleep(1)
+        time_1-=1  
+
+
 
 def updatetimesong(x):
 
@@ -191,7 +222,7 @@ def add():
     listofsongs.append(filename)
     listbox.insert(j,name['TIT2'].text[0])
     
-    print(j)
+
 def remove():
     item=listbox.curselection()[0]
     del listofsongs[item]
@@ -218,6 +249,7 @@ def replay():
     t4=threading.Thread(target=currenttime)
     t4.start()
 def playall():
+    
     global j
     global t
     global index
@@ -239,7 +271,7 @@ def playall_2():
     tag=TinyTag.get(listofsongs[t])
     time_1=tag.duration
     time_1=int(time_1)
-    while time_1>0 and pygame.mixer.music.get_busy() :
+    while time_1>0 and pygame.mixer.music.get_busy()  :
         time.sleep(1)
         time_1-=1    
      
@@ -248,8 +280,49 @@ def playall_2():
         playall()
     if t==j:
         t=0      
-
+def tim():
+    global index
+    global time_1
+    global time_2
+    global minet
+    global sec
+    stopsong()
+    sec=sec-5
+    time_1=time_1-5
+    updatelabel(index)
+    ganre(index)
+    artist(index)
+    updatetimesong(index)
+    x=int(time_1)
+    start=time_2-x
+    current.set(f"{minet}:{sec}")
+    pygame.mixer.music.load(listofsongs[index])
+    pygame.mixer.music.play(start=start)
+    t8=threading.Thread(target=currenttime2)
+    t8.start()
         
+def tim1():
+    global index
+    global time_1
+    global time_2
+    global minet
+    global sec
+    stopsong()
+    sec=sec-5
+    time_1=time_1+5
+    updatelabel(index)
+    ganre(index)
+    artist(index)
+    updatetimesong(index)
+    x=int(time_1)
+    start=time_2-x
+    current.set(f"{minet}:{sec}")
+    pygame.mixer.music.load(listofsongs[index])
+    pygame.mixer.music.play(start=start)
+    t9=threading.Thread(target=currenttime2)
+    t9.start()
+
+
 def ganre(x):
     tag=TinyTag.get(listofsongs[x])
     g=tag.genre
@@ -258,6 +331,8 @@ def artist(x):
     tag=TinyTag.get(listofsongs[x])
     art=tag.artist
     artsong.set(art)
+
+
 ganresong=StringVar()
 artsong=StringVar()
 ganrelab=Label(root,textvariable=ganresong)
@@ -331,7 +406,12 @@ butre.place(x=45,y=250)
 play_all=Button(root,text="playall",bg="pink",command=playall)
 play_all.pack()
 play_all.place(x=10,y=120)
-
+butgo=Button(root,text="-5",bg="orange",height=1,width=1,command=tim)
+butgo.pack()
+butgo.place(x=190,y=200)
+butback=Button(root,text="+5",bg="orange",heigh=1,width=1,command=tim1)
+butback.pack()
+butback.place(x=210,y=200)
 
 root.mainloop()
 
